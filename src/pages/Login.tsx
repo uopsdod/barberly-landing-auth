@@ -16,12 +16,34 @@ export default function LoginPage({ initialMode = "signin" }: { initialMode?: Mo
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
+  // Route by persisted profiles.role after auth (not a blanket /app):
+  // shop → /shop, admin → /admin/payouts (built in M2.2), else customer → /app.
+  // Fixing this at the source stops a shop landing on the customer page (and,
+  // later, an admin stranded away from the payout page).
+  async function redirectByRole(fallback: Role | "admin" = "customer") {
+    const { data: userData } = await supabase.auth.getUser();
+    let userRole: string | null = null;
+    if (userData.user) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userData.user.id)
+        .maybeSingle();
+      userRole = data?.role ?? null;
+    }
+    const effective = userRole ?? fallback;
+    navigate(
+      effective === "shop" ? "/shop" : effective === "admin" ? "/admin/payouts" : "/app",
+      { replace: true },
+    );
+  }
+
   useEffect(() => {
     setMode(initialMode);
   }, [initialMode]);
 
   useEffect(() => {
-    if (!loading && session) navigate("/app");
+    if (!loading && session) void redirectByRole();
   }, [session, loading, navigate]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -39,12 +61,14 @@ export default function LoginPage({ initialMode = "signin" }: { initialMode?: Mo
         });
         if (error) throw error;
         toast.success("Welcome to Barberly!");
+        await redirectByRole(role);
+        return;
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Signed in");
       }
-      navigate("/app");
+      await redirectByRole();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {

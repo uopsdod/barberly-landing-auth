@@ -1,18 +1,26 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
+import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 
 export default function AppPage() {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
+  const { role, isShop, loading: profileLoading, refresh } = useProfile();
+  const [upgrading, setUpgrading] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) navigate("/sign-in");
-  }, [loading, user, navigate]);
+    if (!authLoading && !user) navigate("/sign-in");
+  }, [authLoading, user, navigate]);
 
-  if (loading || !user) {
+  // A shop shouldn't linger on the customer page — send them to their dashboard.
+  useEffect(() => {
+    if (!profileLoading && isShop) navigate("/shop", { replace: true });
+  }, [profileLoading, isShop, navigate]);
+
+  if (authLoading || !user || profileLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <p className="text-sm text-muted-foreground">Loading…</p>
@@ -20,8 +28,26 @@ export default function AppPage() {
     );
   }
 
-  const role = (user.user_metadata as { role?: string } | null)?.role;
-  const isShop = role === "shop";
+  async function becomeShop() {
+    if (!user) return;
+    setUpgrading(true);
+    try {
+      // Upgrade the current user's OWN profile to a shop (RLS: profiles_update_own).
+      // Never writes 'admin' — that is promoted by a migration only.
+      const { error } = await supabase
+        .from("profiles")
+        .update({ role: "shop" })
+        .eq("id", user.id);
+      if (error) throw error;
+      await refresh();
+      toast.success("You're a shop now — let's set up your barbers.");
+      navigate("/shop");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not open a shop");
+    } finally {
+      setUpgrading(false);
+    }
+  }
 
   async function signOut() {
     const { error } = await supabase.auth.signOut();
@@ -38,11 +64,6 @@ export default function AppPage() {
             <span className="hidden text-sm text-muted-foreground sm:inline">
               Hi <span className="text-foreground">{user.email}</span>
             </span>
-            {isShop && (
-              <span className="rounded-full bg-ink px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-primary-foreground">
-                barber
-              </span>
-            )}
             <button
               onClick={signOut}
               className="inline-flex h-9 items-center rounded-full border border-border bg-background px-4 text-sm font-medium hover:border-ink"
@@ -57,19 +78,29 @@ export default function AppPage() {
         <span className="inline-block rounded-full border border-border bg-background px-3 py-1 text-xs font-medium uppercase tracking-widest text-muted-foreground">
           Coming soon
         </span>
-        <h1 className="mt-6 font-serif text-4xl md:text-5xl">
-          {isShop ? "Your barber dashboard" : "Barbers near you"}
-        </h1>
+        <h1 className="mt-6 font-serif text-4xl md:text-5xl">Barbers near you</h1>
         <p className="mt-5 text-base text-muted-foreground">
-          {isShop
-            ? "理髮師後台即將上線 — 下一個里程碑會加上個人檔案、服務項目與排班管理。"
-            : "附近的理髮師即將上線 — 下一個里程碑會加上瀏覽與預約功能。"}
+          附近的理髮師即將上線 — 下一個里程碑會加上瀏覽與預約功能。
         </p>
         <p className="mt-2 text-sm text-muted-foreground">
-          {isShop
-            ? "Your barber dashboard is coming soon — profile, services & schedule arrive in the next milestone."
-            : "Barbers near you are coming soon — browse & booking arrive in the next milestone."}
+          Barbers near you are coming soon — browse &amp; booking arrive in the next milestone.
         </p>
+
+        {role === "customer" && (
+          <div className="mt-10 rounded-3xl border border-border bg-background p-8 shadow-card">
+            <h2 className="font-serif text-2xl">Run a barbershop?</h2>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Open a shop to list your barbers, publish services and schedules, and get paid.
+            </p>
+            <button
+              onClick={becomeShop}
+              disabled={upgrading}
+              className="mt-5 inline-flex h-11 items-center rounded-full bg-ink px-6 text-sm font-medium text-primary-foreground transition hover:opacity-90 disabled:opacity-60"
+            >
+              {upgrading ? "Opening…" : "Become a shop"}
+            </button>
+          </div>
+        )}
       </main>
     </div>
   );

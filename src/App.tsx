@@ -2,9 +2,13 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AuthProvider } from "@/lib/auth-context";
 import { Toaster } from "@/components/ui/sonner";
+import { RequireAuth } from "@/components/RequireAuth";
+import { RequireShop } from "@/components/RequireShop";
 import Landing from "@/pages/Landing";
 import LoginPage from "@/pages/Login";
 import AppPage from "@/pages/AppPage";
+import ShopOnboarding from "@/pages/ShopOnboarding";
+import ShopBookings from "@/pages/ShopBookings";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +36,12 @@ export default function App() {
             <Route path="/app" element={<AppPage />} />
             <Route path="/sign-in" element={<LoginPage initialMode="signin" />} />
             <Route path="/sign-up" element={<LoginPage initialMode="signup" />} />
+            <Route element={<RequireAuth />}>
+              <Route element={<RequireShop />}>
+                <Route path="/shop" element={<ShopOnboarding />} />
+                <Route path="/shop/bookings" element={<ShopBookings />} />
+              </Route>
+            </Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
