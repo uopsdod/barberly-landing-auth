@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Search, ShieldCheck, Zap, Lock, Star } from "lucide-react";
 import heroLeft from "@/assets/hero-left.jpg";
@@ -7,10 +7,6 @@ import barber1 from "@/assets/barber-1.jpg";
 import barber2 from "@/assets/barber-2.jpg";
 import barber3 from "@/assets/barber-3.jpg";
 import barber4 from "@/assets/barber-4.jpg";
-
-export const Route = createFileRoute("/")({
-  component: Landing,
-});
 
 const FILTERS = ["All", "Cut", "Color", "Perm", "Beard"] as const;
 
@@ -23,7 +19,7 @@ const BARBERS = [
 
 const PARTNERS = ["MAISON", "CREME&CO", "NORDLYS", "AURA", "ATELIER", "STUDIO 9"];
 
-function Landing() {
+export default function Landing() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -53,7 +49,7 @@ function Navbar() {
         </div>
         <div className="ml-auto">
           <Link
-            to="/login"
+            to="/sign-in"
             className="inline-flex h-10 items-center rounded-full bg-ink px-5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
           >
             Login
@@ -180,7 +176,7 @@ function Popular() {
           {BARBERS.map((b) => (
             <button
               key={b.name}
-              onClick={() => navigate({ to: "/login" })}
+              onClick={() => navigate("/sign-in")}
               className="group relative overflow-hidden rounded-3xl bg-background text-left shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-lift"
             >
               <div className="relative aspect-[4/5] overflow-hidden">

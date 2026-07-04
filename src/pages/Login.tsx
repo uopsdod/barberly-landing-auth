@@ -1,27 +1,27 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/login")({
-  component: LoginPage,
-});
-
 type Mode = "signin" | "signup";
 type Role = "customer" | "shop";
 
-function LoginPage() {
+export default function LoginPage({ initialMode = "signin" }: { initialMode?: Mode }) {
   const navigate = useNavigate();
   const { session, loading } = useAuth();
-  const [mode, setMode] = useState<Mode>("signin");
+  const [mode, setMode] = useState<Mode>(initialMode);
   const [role, setRole] = useState<Role>("customer");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && session) navigate({ to: "/barbers" });
+    setMode(initialMode);
+  }, [initialMode]);
+
+  useEffect(() => {
+    if (!loading && session) navigate("/app");
   }, [session, loading, navigate]);
 
   async function onSubmit(e: React.FormEvent) {
@@ -34,7 +34,7 @@ function LoginPage() {
           password,
           options: {
             data: { role },
-            emailRedirectTo: `${window.location.origin}/barbers`,
+            emailRedirectTo: `${window.location.origin}/app`,
           },
         });
         if (error) throw error;
@@ -44,7 +44,7 @@ function LoginPage() {
         if (error) throw error;
         toast.success("Signed in");
       }
-      navigate({ to: "/barbers" });
+      navigate("/app");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -72,14 +72,14 @@ function LoginPage() {
           <div className="mb-6 grid grid-cols-2 rounded-full border border-border bg-secondary/60 p-1 text-sm">
             <button
               type="button"
-              onClick={() => setMode("signin")}
+              onClick={() => { setMode("signin"); navigate("/sign-in"); }}
               className={`rounded-full py-2 font-medium transition ${mode === "signin" ? "bg-background shadow-card" : "text-muted-foreground"}`}
             >
               Sign in
             </button>
             <button
               type="button"
-              onClick={() => setMode("signup")}
+              onClick={() => { setMode("signup"); navigate("/sign-up"); }}
               className={`rounded-full py-2 font-medium transition ${mode === "signup" ? "bg-background shadow-card" : "text-muted-foreground"}`}
             >
               Sign up

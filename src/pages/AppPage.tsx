@@ -1,19 +1,15 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/barbers")({
-  component: BarbersPage,
-});
-
-function BarbersPage() {
+export default function AppPage() {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
 
   useEffect(() => {
-    if (!loading && !user) navigate({ to: "/login" });
+    if (!loading && !user) navigate("/sign-in");
   }, [loading, user, navigate]);
 
   if (loading || !user) {
@@ -30,7 +26,7 @@ function BarbersPage() {
   async function signOut() {
     const { error } = await supabase.auth.signOut();
     if (error) toast.error(error.message);
-    else navigate({ to: "/" });
+    else navigate("/");
   }
 
   return (
