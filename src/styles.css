@@ -34,79 +34,128 @@
   --color-cream: var(--cream);
   --color-beige: var(--beige);
   --color-ink: var(--ink);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-navy: var(--navy);
+  --color-crimson: var(--crimson);
 
   --font-serif: "Fraunces", "Cormorant Garamond", ui-serif, Georgia, serif;
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --shadow-card: 0 1px 2px 0 rgb(0 0 0 / 0.04), 0 8px 24px -8px rgb(60 40 20 / 0.08);
-  --shadow-lift: 0 20px 40px -16px rgb(60 40 20 / 0.16);
+  --shadow-card:
+    0 1px 2px 0 rgb(0 0 0 / 0.55),
+    0 12px 34px -14px rgb(0 0 0 / 0.75),
+    inset 0 0 0 1px rgb(201 162 74 / 0.06);
+  --shadow-lift:
+    0 28px 60px -20px rgb(0 0 0 / 0.85),
+    0 0 0 1px rgb(201 162 74 / 0.16),
+    0 0 40px -8px rgb(201 162 74 / 0.10);
 }
 
+/*
+  Barberly — "Gilded Peacock" theme.
+  A dark, opulent art-nouveau palette: warm near-black grounds, antique-gold
+  accents (the CTA / "ink" role), royal-navy secondary surfaces, and crimson
+  for destructive states. Every token below drives the whole app, so the
+  redesign is purely visual — no markup or logic changed.
+*/
 :root {
   --radius: 1rem;
 
-  --background: oklch(0.985 0.006 80);
-  --foreground: oklch(0.18 0.01 60);
+  /* grounds & text */
+  --background: #0c0a07;          /* warm near-black */
+  --foreground: #ecdfc2;          /* soft parchment / gilt-white */
 
-  --cream: oklch(0.965 0.018 80);
-  --beige: oklch(0.9 0.03 75);
-  --ink: oklch(0.16 0.008 60);
+  /* brand accents */
+  --gold: #c9a24a;                /* antique gold — primary accent */
+  --gold-soft: #e4c877;           /* highlight gold */
+  --navy: #16233d;                /* peacock royal-navy */
+  --crimson: #8f2230;             /* peony crimson */
 
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.01 60);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.01 60);
+  --cream: #14100a;               /* lifted warm-black (alternating sections) */
+  --beige: #2b2114;               /* deep gilt-brown */
+  --ink: #c9a24a;                 /* CTA / accent role -> gold */
 
-  --primary: oklch(0.16 0.008 60);
-  --primary-foreground: oklch(0.985 0.006 80);
+  --card: #17110a;
+  --card-foreground: #ecdfc2;
+  --popover: #17110a;
+  --popover-foreground: #ecdfc2;
 
-  --secondary: oklch(0.94 0.02 78);
-  --secondary-foreground: oklch(0.2 0.01 60);
+  --primary: #c9a24a;             /* gold buttons */
+  --primary-foreground: #0c0a07;  /* dark text on gold */
 
-  --muted: oklch(0.955 0.014 80);
-  --muted-foreground: oklch(0.45 0.015 60);
+  --secondary: #16233d;           /* navy chips / toggle tracks */
+  --secondary-foreground: #d7e1f3;
 
-  --accent: oklch(0.9 0.03 75);
-  --accent-foreground: oklch(0.18 0.01 60);
+  --muted: #14100a;
+  --muted-foreground: #a9997a;    /* muted gilt-taupe */
 
-  --destructive: oklch(0.55 0.22 25);
-  --destructive-foreground: oklch(0.98 0 0);
+  --accent: #2a2013;              /* gilt-brown hover surface */
+  --accent-foreground: #f0e4c8;
 
-  --border: oklch(0.9 0.015 75);
-  --input: oklch(0.9 0.015 75);
-  --ring: oklch(0.18 0.01 60);
+  --destructive: #a83341;         /* crimson */
+  --destructive-foreground: #fbeee6;
+
+  --border: #3a2e1a;              /* gold-brown hairline */
+  --input: #3a2e1a;
+  --ring: #c9a24a;
 }
 
+/* No theme toggle ships in the app; mirror the palette so .dark stays consistent. */
 .dark {
-  --background: oklch(0.16 0.008 60);
-  --foreground: oklch(0.97 0.01 80);
-  --card: oklch(0.2 0.01 60);
-  --card-foreground: oklch(0.97 0.01 80);
-  --popover: oklch(0.2 0.01 60);
-  --popover-foreground: oklch(0.97 0.01 80);
-  --primary: oklch(0.97 0.01 80);
-  --primary-foreground: oklch(0.16 0.008 60);
-  --secondary: oklch(0.26 0.01 60);
-  --secondary-foreground: oklch(0.97 0.01 80);
-  --muted: oklch(0.26 0.01 60);
-  --muted-foreground: oklch(0.7 0.01 60);
-  --accent: oklch(0.26 0.01 60);
-  --accent-foreground: oklch(0.97 0.01 80);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.7 0.01 60);
+  --background: #0c0a07;
+  --foreground: #ecdfc2;
+
+  --cream: #14100a;
+  --beige: #2b2114;
+  --ink: #c9a24a;
+
+  --card: #17110a;
+  --card-foreground: #ecdfc2;
+  --popover: #17110a;
+  --popover-foreground: #ecdfc2;
+
+  --primary: #c9a24a;
+  --primary-foreground: #0c0a07;
+
+  --secondary: #16233d;
+  --secondary-foreground: #d7e1f3;
+
+  --muted: #14100a;
+  --muted-foreground: #a9997a;
+
+  --accent: #2a2013;
+  --accent-foreground: #f0e4c8;
+
+  --destructive: #a83341;
+  --destructive-foreground: #fbeee6;
+
+  --border: #3a2e1a;
+  --input: #3a2e1a;
+  --ring: #c9a24a;
 }
 
 @layer base {
   * { border-color: var(--color-border); }
   html { font-family: var(--font-sans); }
   body {
-    background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    background-color: var(--color-background);
+    /* Layered gilt + peacock-navy glows over warm black, echoing the artwork's
+       depth. Kept low-opacity so text contrast is unaffected. */
+    background-image:
+      radial-gradient(120% 85% at 50% -10%, rgb(201 162 74 / 0.10), transparent 55%),
+      radial-gradient(90% 70% at 12% 8%, rgb(22 35 61 / 0.35), transparent 60%),
+      radial-gradient(80% 65% at 92% 100%, rgb(143 34 48 / 0.16), transparent 62%);
+    background-attachment: fixed;
   }
   h1, h2, h3, .font-serif { font-family: var(--font-serif); letter-spacing: -0.02em; }
+  /* Emphasis inside serif display headings picks up the gilt highlight. */
+  h1 em, h2 em, .font-serif em { color: var(--color-gold-soft); font-style: italic; }
+  /* Gold text selection to complete the gilded feel. */
+  ::selection { background: rgb(201 162 74 / 0.30); color: #fff4dc; }
 }
 
 @utility fade-in-up {
@@ -115,4 +164,9 @@
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* Thin gilded scrollbar to match the ornamented aesthetic (visual only). */
+@layer base {
+  * { scrollbar-color: rgb(201 162 74 / 0.45) transparent; }
 }
