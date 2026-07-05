@@ -3,8 +3,12 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { useProfile } from "@/hooks/useProfile";
+import { CustomerHeader } from "@/components/CustomerHeader";
 import { toast } from "sonner";
 
+// Customer hub. Signed-in customers normally land on /barbers after auth; this page is a
+// simple home with the browse / my-bookings entry points, plus the optional "become a
+// shop" upgrade (not relied on anywhere else).
 export default function AppPage() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
@@ -32,12 +36,7 @@ export default function AppPage() {
     if (!user) return;
     setUpgrading(true);
     try {
-      // Upgrade the current user's OWN profile to a shop (RLS: profiles_update_own).
-      // Never writes 'admin' — that is promoted by a migration only.
-      const { error } = await supabase
-        .from("profiles")
-        .update({ role: "shop" })
-        .eq("id", user.id);
+      const { error } = await supabase.from("profiles").update({ role: "shop" }).eq("id", user.id);
       if (error) throw error;
       await refresh();
       toast.success("You're a shop now — let's set up your barbers.");
@@ -49,45 +48,31 @@ export default function AppPage() {
     }
   }
 
-  async function signOut() {
-    const { error } = await supabase.auth.signOut();
-    if (error) toast.error(error.message);
-    else navigate("/");
-  }
-
   return (
     <div className="min-h-screen bg-cream">
-      <header className="border-b border-border/60 bg-background/80 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-5">
-          <Link to="/" className="font-serif text-2xl font-semibold">Barberly</Link>
-          <div className="ml-auto flex items-center gap-3">
-            <span className="hidden text-sm text-muted-foreground sm:inline">
-              Hi <span className="text-foreground">{user.email}</span>
-            </span>
-            <button
-              onClick={signOut}
-              className="inline-flex h-9 items-center rounded-full border border-border bg-background px-4 text-sm font-medium hover:border-ink"
-            >
-              Sign out
-            </button>
-          </div>
+      <CustomerHeader />
+      <main className="mx-auto max-w-3xl px-5 py-20 text-center">
+        <h1 className="font-serif text-4xl md:text-5xl">Welcome to Barberly</h1>
+        <p className="mt-4 text-base text-muted-foreground">
+          Browse barbers, view their work, and book a slot.
+        </p>
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
+          <Link
+            to="/barbers"
+            className="inline-flex h-11 items-center rounded-full bg-ink px-6 text-sm font-medium text-primary-foreground hover:opacity-90"
+          >
+            Browse barbers
+          </Link>
+          <Link
+            to="/bookings"
+            className="inline-flex h-11 items-center rounded-full border border-border bg-background px-6 text-sm font-medium hover:border-ink"
+          >
+            My bookings
+          </Link>
         </div>
-      </header>
-
-      <main className="mx-auto max-w-3xl px-5 py-24 text-center">
-        <span className="inline-block rounded-full border border-border bg-background px-3 py-1 text-xs font-medium uppercase tracking-widest text-muted-foreground">
-          Coming soon
-        </span>
-        <h1 className="mt-6 font-serif text-4xl md:text-5xl">Barbers near you</h1>
-        <p className="mt-5 text-base text-muted-foreground">
-          附近的理髮師即將上線 — 下一個里程碑會加上瀏覽與預約功能。
-        </p>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Barbers near you are coming soon — browse &amp; booking arrive in the next milestone.
-        </p>
 
         {role === "customer" && (
-          <div className="mt-10 rounded-3xl border border-border bg-background p-8 shadow-card">
+          <div className="mt-14 rounded-3xl border border-border bg-background p-8 shadow-card">
             <h2 className="font-serif text-2xl">Run a barbershop?</h2>
             <p className="mt-2 text-sm text-muted-foreground">
               Open a shop to list your barbers, publish services and schedules, and get paid.

@@ -33,7 +33,7 @@ export default function LoginPage({ initialMode = "signin" }: { initialMode?: Mo
     }
     const effective = userRole ?? fallback;
     navigate(
-      effective === "shop" ? "/shop" : effective === "admin" ? "/admin/payouts" : "/app",
+      effective === "shop" ? "/shop" : effective === "admin" ? "/admin/payouts" : "/barbers",
       { replace: true },
     );
   }
@@ -56,7 +56,7 @@ export default function LoginPage({ initialMode = "signin" }: { initialMode?: Mo
           password,
           options: {
             data: { role },
-            emailRedirectTo: `${window.location.origin}/app`,
+            emailRedirectTo: `${window.location.origin}/barbers`,
           },
         });
         if (error) throw error;

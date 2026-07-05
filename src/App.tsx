@@ -9,6 +9,9 @@ import LoginPage from "@/pages/Login";
 import AppPage from "@/pages/AppPage";
 import ShopOnboarding from "@/pages/ShopOnboarding";
 import ShopBookings from "@/pages/ShopBookings";
+import Barbers from "@/pages/Barbers";
+import BarberDetail from "@/pages/BarberDetail";
+import MyBookings from "@/pages/MyBookings";
 
 const queryClient = new QueryClient();
 
@@ -34,9 +37,12 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/app" element={<AppPage />} />
+            <Route path="/barbers" element={<Barbers />} />
+            <Route path="/barbers/:id" element={<BarberDetail />} />
             <Route path="/sign-in" element={<LoginPage initialMode="signin" />} />
             <Route path="/sign-up" element={<LoginPage initialMode="signup" />} />
             <Route element={<RequireAuth />}>
+              <Route path="/bookings" element={<MyBookings />} />
               <Route element={<RequireShop />}>
                 <Route path="/shop" element={<ShopOnboarding />} />
                 <Route path="/shop/bookings" element={<ShopBookings />} />
