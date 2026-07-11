@@ -12,6 +12,7 @@ import ShopBookings from "@/pages/ShopBookings";
 import Barbers from "@/pages/Barbers";
 import BarberDetail from "@/pages/BarberDetail";
 import MyBookings from "@/pages/MyBookings";
+import BookingSuccess from "@/pages/BookingSuccess";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ export default function App() {
             <Route path="/app" element={<AppPage />} />
             <Route path="/barbers" element={<Barbers />} />
             <Route path="/barbers/:id" element={<BarberDetail />} />
+            <Route path="/bookings/success" element={<BookingSuccess />} />
             <Route path="/sign-in" element={<LoginPage initialMode="signin" />} />
             <Route path="/sign-up" element={<LoginPage initialMode="signup" />} />
             <Route element={<RequireAuth />}>

@@ -105,18 +105,27 @@ export function BookingDialog({
     if (!service || !startSlotId) return;
     setBusy(true);
     try {
-      const { error } = await supabase.rpc("create_booking", {
+      // 1. create the pending_payment booking (+ N booking_slots) atomically; price is snapshotted.
+      const { data: bookingId, error } = await supabase.rpc("create_booking", {
         p_service_id: service.id,
         p_start_slot_id: startSlotId,
       });
       if (error) throw error;
-      toast.success("Booked — see it under My bookings.");
-      onOpenChange(false);
-      onBooked();
+      // 2. create a Stripe Checkout Session for that exact booking.
+      const res = await fetch("/api/bookings/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ booking_id: bookingId }),
+      });
+      if (!res.ok) throw new Error("Could not start checkout.");
+      const { url } = await res.json();
+      if (!url) throw new Error("No checkout URL returned.");
+      // 3. hand off to Stripe's hosted payment page. The booking stays pending_payment until the
+      //    webhook confirms payment — this redirect is NOT the source of truth.
+      window.location.href = url;
     } catch (err) {
-      toast.error(errMessage(err, "Could not complete the booking."));
-    } finally {
-      setBusy(false);
+      toast.error(errMessage(err, "Could not start payment."));
+      setBusy(false); // on success we navigate away, so only reset busy on failure
     }
   }
 
@@ -244,7 +253,7 @@ export function BookingDialog({
             disabled={!service || !startSlotId || busy}
             className="inline-flex h-10 items-center rounded-full bg-ink px-5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
           >
-            {busy ? "Booking…" : "Confirm booking"}
+            {busy ? "Redirecting…" : "Confirm & pay"}
           </button>
         </DialogFooter>
       </DialogContent>
