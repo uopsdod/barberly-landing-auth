@@ -4,15 +4,18 @@ import { AuthProvider } from "@/lib/auth-context";
 import { Toaster } from "@/components/ui/sonner";
 import { RequireAuth } from "@/components/RequireAuth";
 import { RequireShop } from "@/components/RequireShop";
+import { RequireAdmin } from "@/components/RequireAdmin";
 import Landing from "@/pages/Landing";
 import LoginPage from "@/pages/Login";
 import AppPage from "@/pages/AppPage";
 import ShopOnboarding from "@/pages/ShopOnboarding";
 import ShopBookings from "@/pages/ShopBookings";
+import ShopEarnings from "@/pages/ShopEarnings";
 import Barbers from "@/pages/Barbers";
 import BarberDetail from "@/pages/BarberDetail";
 import MyBookings from "@/pages/MyBookings";
 import BookingSuccess from "@/pages/BookingSuccess";
+import AdminPayouts from "@/pages/AdminPayouts";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +51,10 @@ export default function App() {
               <Route element={<RequireShop />}>
                 <Route path="/shop" element={<ShopOnboarding />} />
                 <Route path="/shop/bookings" element={<ShopBookings />} />
+                <Route path="/shop/earnings" element={<ShopEarnings />} />
+              </Route>
+              <Route element={<RequireAdmin />}>
+                <Route path="/admin/payouts" element={<AdminPayouts />} />
               </Route>
             </Route>
             <Route path="*" element={<NotFound />} />

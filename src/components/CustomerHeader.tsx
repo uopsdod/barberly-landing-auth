@@ -1,12 +1,14 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
+import { useProfile } from "@/hooks/useProfile";
 import { toast } from "sonner";
 
 // Customer-facing navbar (browse + my bookings). Mirrors ShopHeader but for the buyer
 // surface; does NOT depend on any "become a shop" control existing.
 export function CustomerHeader() {
   const { user } = useAuth();
+  const { isAdmin } = useProfile();
   const navigate = useNavigate();
 
   async function signOut() {
@@ -25,6 +27,7 @@ export function CustomerHeader() {
         <nav className="ml-2 flex items-center gap-4">
           <NavLink to="/barbers" className={linkCls}>Barbers</NavLink>
           {user && <NavLink to="/bookings" className={linkCls}>My bookings</NavLink>}
+          {isAdmin && <NavLink to="/admin/payouts" className={linkCls}>Payouts</NavLink>}
         </nav>
         <div className="ml-auto flex items-center gap-3">
           {user ? (

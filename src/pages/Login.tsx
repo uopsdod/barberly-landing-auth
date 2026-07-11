@@ -17,9 +17,7 @@ export default function LoginPage({ initialMode = "signin" }: { initialMode?: Mo
   const [busy, setBusy] = useState(false);
 
   // Route by persisted profiles.role after auth (not a blanket /app):
-  // shop → /shop, customer → /barbers. The admin's own page (/admin/payouts) is built in
-  // M2.2, so until then route admin → /barbers too — the account is promoted in the M2.1
-  // prereq but has no page yet, and we must not strand it on a 404. M2.2 restores /admin/payouts.
+  // shop → /shop, admin → /admin/payouts (built in M2.2), customer → /barbers.
   async function redirectByRole(fallback: Role | "admin" = "customer") {
     const { data: userData } = await supabase.auth.getUser();
     let userRole: string | null = null;
@@ -32,10 +30,9 @@ export default function LoginPage({ initialMode = "signin" }: { initialMode?: Mo
       userRole = data?.role ?? null;
     }
     const effective = userRole ?? fallback;
-    navigate(
-      effective === "shop" ? "/shop" : "/barbers", // TODO(M2.2): admin → "/admin/payouts"
-      { replace: true },
-    );
+    const dest =
+      effective === "shop" ? "/shop" : effective === "admin" ? "/admin/payouts" : "/barbers";
+    navigate(dest, { replace: true });
   }
 
   useEffect(() => {

@@ -26,6 +26,7 @@ export function ShopHeader() {
         <nav className="ml-4 flex items-center gap-4">
           <NavLink to="/shop" end className={linkCls}>Onboarding</NavLink>
           <NavLink to="/shop/bookings" className={linkCls}>Schedule &amp; services</NavLink>
+          <NavLink to="/shop/earnings" className={linkCls}>Earnings</NavLink>
         </nav>
         <div className="ml-auto flex items-center gap-3">
           <span className="hidden text-sm text-muted-foreground sm:inline">
